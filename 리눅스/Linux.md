@@ -179,7 +179,7 @@ $ crontab -e
 # 크론탭 내용 확인
 $ crontab -l
 
-리눅스 쉘에 다음처럼 입력합니다.
+# 리눅스 쉘에 다음처럼 입력합니다.
 # 크론탭 삭제
 $ crontab -r
 
@@ -196,4 +196,28 @@ $ 45 5 * * 5 /home/test.sh
 
 # 크론 로깅
 $ * * * * * /home/test.sh > /home/test.sh.log 2>&1
+```
+
+# 시스템 서비스 실행 및 확인하기
+```bash
+# 서비스 상태 확인
+$ systemctl status service.service
+
+# 서비스 시작
+$ systemctl start service.service
+
+# 서비스 중지
+$ systemctl stop service.service
+
+# 서비스 재시작
+$ systemctl restart service.service
+
+# 서비스 중지 하지 않고 재시작
+$ systemctl reload service.service
+
+# 시스탬이 재부팅 되면 자동으로 시작
+$ systemctl enable service.service
+
+# enable한 서비스 제거
+$ systemctl disable service.service
 ```
