@@ -1,4 +1,5 @@
 *.DS_Store
+*.idea
 /깃
 /SSL
 /네스트JS
