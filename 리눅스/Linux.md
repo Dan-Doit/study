@@ -142,7 +142,7 @@ brew install watchman
 
 ## 리눅스 Cron
 
-# 스크립트 함수로 알리아스 만들기
+# 스크립트 함수로 Alias 만들기
 
 ```bash
 clientoff() {
