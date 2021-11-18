@@ -75,3 +75,7 @@ Function Mocking
 
 
 
+### 타입에 대한 정의
+
+
+
