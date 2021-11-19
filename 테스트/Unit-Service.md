@@ -1,3 +1,5 @@
+
+
 # Service test에 대하여
 
 ---
@@ -77,5 +79,17 @@ Function Mocking
 
 ### 타입에 대한 정의
 
+먼저 타입을 사용하기위해 타입을 정의해준다.
 
+```typescript
+export type ProjectMockRepository<T = any> = Partial<
+  Record<keyof ProjectRepository, jest.Mock>
+>;
+```
+
+아래와 같이 타입을 먼저 정해주고 이 Repository를 사용하기 위해 getCustomRepositoryToken을 사용하여 선언한다.
+
+```
+projectRepository = module.get(getCustomRepositoryToken(ProjectRepository));
+```
 
