@@ -93,3 +93,19 @@ export type ProjectMockRepository<T = any> = Partial<
 projectRepository = module.get(getCustomRepositoryToken(ProjectRepository));
 ```
 
+
+
+### Global 함수에 대한 정의
+
+대표적으로 Date 함수에 대한 정의이다.
+
+```typescript
+const mockDate = new Date();
+
+jest
+  .spyOn(global, 'Date')
+  .mockImplementation(() => (mockDate as unknown) as string);
+```
+
+
+
