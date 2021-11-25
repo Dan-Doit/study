@@ -109,3 +109,66 @@ jest
 
 
 
+### 서비스의  Unit TEST 작성
+
+Error에 대한 정의
+
+```typescript
+    it('존재하지 않는 견적서 정보를 조회할 경우 HttpException NOT_FOUND 에러 반환된다', async () => {
+      estimateRepository.findById.mockResolvedValue(undefined);
+      try {
+        await estimateService.updateEstimate(updateEstimateArgs, memberId);
+      } catch (e) {
+        expect(e).toBeInstanceOf(HttpException);
+        expect(e.status).toEqual(HttpStatus.NOT_FOUND);
+        expect(e.response.error).toEqual(
+          `Not found by estimateId:${updateEstimateArgs.estimateId}`,
+        );
+      }
+    });
+```
+
+Expect에 대한 정의
+
+```typescript
+it('처음 생성한 견적서가 있으면 견적서가 업데이트 되어야 한다.', async () => {
+      memberRepository.findById.mockResolvedValue(new Member());
+      estimateRepository.findById.mockResolvedValue(
+        mockEstimateForUpdateEstimateFirstTime,
+      );
+      itemRepository.create.mockImplementation(args => args);
+      projectRepository.findById.mockResolvedValue({ id: 1 });
+      jest
+        .spyOn(global, 'Date')
+        .mockImplementation(() => (mockDate as unknown) as string);
+      estimateRepository.getEstimateCountForProject.mockResolvedValue(0);
+      const updatedEstimate = await estimateService.updateEstimate(
+        updateEstimateArgs,
+        memberId,
+      );
+      expect(estimateTempRepository.remove).toBeCalled();
+      expect(estimateHistoryRepository.save).not.toBeCalled();
+      expect(itemHistoryRepository.save).not.toBeCalled();
+      expect(notificationService.createEstimateNotification).toBeCalled();
+      expect(notificationService.submitEstimateNotification).toBeCalled();
+      expect(updatedEstimate).toEqual(updateEstimateExpectValues);
+    });
+```
+
+실행되는 함수의 실행 여부 정의
+
+```typescript
+    it('이미 있는 견적서가 있으면 이력을 저장하고 업데이트 되어야 한다.', async () => {
+      memberRepository.findById.mockResolvedValue(new Member());
+      estimateRepository.findById.mockResolvedValue(updateEstimateExpectValues);
+      itemRepository.create.mockImplementation(args => args);
+      projectRepository.findById.mockResolvedValue({ id: 1 });
+      await estimateService.updateEstimate(updateEstimateArgs, memberId);
+      expect(estimateTempRepository.remove).not.toBeCalled();
+      expect(notificationService.updateEstimateNotification).toBeCalled();
+      expect(estimateHistoryRepository.save).toBeCalled();
+      expect(itemHistoryRepository.save).toBeCalled();
+    });
+
+```
+
