@@ -151,7 +151,7 @@ it('처음 생성한 견적서가 있으면 견적서가 업데이트 되어야 
       expect(itemHistoryRepository.save).not.toBeCalled();
       expect(notificationService.createEstimateNotification).toBeCalled();
       expect(notificationService.submitEstimateNotification).toBeCalled();
-      expect(updatedEstimate).toEqual(updateEstimateExpectValues);
+      expect(updatedEstimate).toEqual(updateEstimateExpectValues);          // 결과값을 확인 및 예상
     });
 ```
 
@@ -164,8 +164,8 @@ it('처음 생성한 견적서가 있으면 견적서가 업데이트 되어야 
       itemRepository.create.mockImplementation(args => args);
       projectRepository.findById.mockResolvedValue({ id: 1 });
       await estimateService.updateEstimate(updateEstimateArgs, memberId);
-      expect(estimateTempRepository.remove).not.toBeCalled();
-      expect(notificationService.updateEstimateNotification).toBeCalled();
+      expect(estimateTempRepository.remove).not.toBeCalled();               // 실헹 되지 않은 케이스 확인
+      expect(notificationService.updateEstimateNotification).toBeCalled();  // 실행 된 케이스 확인
       expect(estimateHistoryRepository.save).toBeCalled();
       expect(itemHistoryRepository.save).toBeCalled();
     });
