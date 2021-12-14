@@ -1,47 +1,59 @@
-import {MemberRepository,ReceiptRepository} from './repository';
+import {MemberRepository, ReceiptRepository} from './repository';
 import {NotFoundException} from '../data';
 import {Bill, Member} from "../entity";
 
+export class MemberService {
+    constructor(
+        private readonly memberRepository : MemberRepository,
+        private readonly receiptRepository : ReceiptRepository
+    ){}
 
-export const findMember = (id:number) : Member => {
-    const memberRepository : MemberRepository = new MemberRepository();
-
-    const foundMember = memberRepository.findOne(id);
-    if(!foundMember) throw NotFoundException('MEMBER',id);
-    return foundMember;
-}
-
-export const totalMemberBills = (id:number) : Member => {
-    const memberRepository : MemberRepository = new MemberRepository();
-    const receiptRepository : ReceiptRepository = new ReceiptRepository();
-
-    const foundMember = memberRepository.findOne(id);
-    if(!foundMember) throw NotFoundException('MEMBER', id);
-
-    const foundBills = receiptRepository.findAll()
-
-    // 한사람이 얼마나 사용했는지 알아보자
-    let newBills : Bill[] = []
-    let totalPayment : number  = 0;
-    for (let i in foundBills) {
-        // new bills 에 해당하는 고객의 가격 추가
-        if(id === foundBills[i].memberId) {
-            // 고객의 카드 사용 내역 추가
-            newBills.push(
-                {
-                    ...foundBills[i],
-                    // 돈에 세자릿수 컴마 찍어주기
-                    amount : foundBills[i].amount.toLocaleString()
-                }
-            )
-            // 고객의 지출 비용 합계 구하기
-            totalPayment += +foundBills[i].amount;
-        }
+    findMember = (id:number) : Member => {
+        return throwMemberNotFound(id, this.memberRepository.findOne(id))
     }
 
+    totalMemberBills = (id:number) : Member => {
+        const foundMember = throwMemberNotFound(id, this.memberRepository.findOne(id));
+        const memberBills = findMemberBills(id, this.receiptRepository.findAll())
+        return memberConverter(foundMember, memberBills)
+    }
+}
+
+const exchangeWon = (money : number) : string => {
+    return money.toLocaleString();
+}
+
+const findMemberBills = (memberId :number, bills : Bill[]) : Bill[] => {
+    return bills.filter((bill) => memberId === bill.memberId)
+}
+
+const totalPaymentConverter = (memberBills : Bill[]) : string => {
+    const totalPayment = memberBills.reduce((save, current) => {
+        return save + +current.amount
+    },0)
+    return exchangeWon(totalPayment);
+}
+
+const billConverter = (bills : Bill[]) : Bill[] => {
+    return bills.map(bill => (
+        {
+            ...bill,
+            amount :  exchangeWon(+bill.amount)
+        }
+    ))
+}
+
+const memberConverter = (member : Member, bills : Bill[]) : Member => {
     return {
-        ...foundMember,
-        bills : newBills,
-        totalPayment:totalPayment.toLocaleString()
+        ...member,
+        bills : billConverter(bills),
+        totalPayment: totalPaymentConverter(bills)
     };
+}
+
+const throwMemberNotFound = (id :number, response: Member) : Member => {
+    if(!response) {
+        throw NotFoundException('MEMBER',id);
+    }
+    return response;
 }

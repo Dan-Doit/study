@@ -4,7 +4,9 @@
   "main": "main.js",
   "license": "MIT",
   "scripts": {
+    "test": "node dist/src/test/test.js",
     "start": "node dist/main.js",
-    "prestart": "tsc"
+    "prestart": "tsc",
+    "pretest": "tsc"
   }
 }

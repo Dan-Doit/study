@@ -1,11 +1,20 @@
-import {findMember, totalMemberBills} from './src/app/servise';
+import {MemberService} from './src/app/servise';
+import {MemberRepository, ReceiptRepository} from './src/app/repository';
 import {shouldBeEqual} from "./src/test/test";
 
+const init = () => {
+    const memberRepository = new MemberRepository();
+    const receiptRepository = new ReceiptRepository();
 
-// console.debug(findMember(1));
+    return new MemberService(memberRepository, receiptRepository);
+}
+
+const memberService = init();
+
+console.debug(memberService.findMember(1));
+
 // console.debug(findMember(10));
+console.log(memberService.totalMemberBills(1));
 
-console.log(totalMemberBills(1));
-
-// test
-shouldBeEqual(totalMemberBills(1))
+//  test
+shouldBeEqual(memberService.totalMemberBills(1))
