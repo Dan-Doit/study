@@ -1,5 +1,5 @@
-import {MemberService} from './src/app/servise';
-import {MemberRepository, ReceiptRepository} from './src/app/repository';
+import {MemberService} from './src/app/6-1/servise';
+import {MemberRepository, ReceiptRepository} from './src/app/6-1/repository';
 import {shouldBeEqual} from "./src/test/test";
 
 const init = () => {

@@ -1,5 +1,5 @@
-import {memberList, billsList} from '../data'
-import {Member, Bill} from '../entity';
+import {memberList, billsList} from '../../data'
+import {Member, Bill} from '../../entity';
 
 export class MemberRepository {
     findOne (id:number) : Member {

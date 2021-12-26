@@ -1,6 +1,6 @@
 import {MemberRepository, ReceiptRepository} from './repository';
-import {NotFoundException} from '../data';
-import {Bill, Member} from "../entity";
+import {NotFoundException} from '../../data';
+import {Bill, Member} from "../../entity";
 
 export class MemberService {
     constructor(
