@@ -18,3 +18,14 @@ export const expectTotalMemberBills = {
     ],
     totalPayment: '7,892,800'
 }
+
+export const expectBillsInfo = {
+    '0': { id: 3, memberId: 1, card: 'cat', amount: 780000 },
+    '1': { id: 9, memberId: 1, card: 'cat', amount: 2800 },
+    '2': { id: 10, memberId: 1, card: 'cat', amount: 650000 },
+    '3': { id: 12, memberId: 2, card: 'cat', amount: 332000 },
+    '4': { id: 14, memberId: 2, card: 'cat', amount: 250000 },
+    '5': { id: 15, memberId: 2, card: 'cat', amount: 1400000 },
+    totalAmount: 3414800,
+        totalAmountWithOutTax: 3073320
+}

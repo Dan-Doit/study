@@ -11,4 +11,8 @@ export class ReceiptRepository {
     findAll () : Bill[] {
         return billsList
     }
+
+    findByCompany (companyName : string) : Bill[] {
+        return billsList.filter((bill : Bill) => bill.card === companyName)
+    }
 }
