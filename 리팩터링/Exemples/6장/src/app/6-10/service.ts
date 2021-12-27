@@ -43,9 +43,11 @@ export class BillService {
 
 const convertBillsInfo = (foundBills) => {
     const bills = {...foundBills}
+
     bills.totalAmount = foundBills.reduce((previousBalance, currentBalance) => {
         return previousBalance + +currentBalance.amount
     },0)
+
     bills.totalAmountWithOutTax = bills.totalAmount * 0.9
     return bills
 }
