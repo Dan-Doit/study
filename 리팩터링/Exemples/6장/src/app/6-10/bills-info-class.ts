@@ -3,7 +3,7 @@ import {Bill} from '../../entity';
 export class BillsInfoClass {
     bills : Bill[];
     constructor(bills : Bill[]){
-        this.bills = bills;
+        this.bills = {...bills};
     }
 
     billsInfo = () : Bill[] => {
