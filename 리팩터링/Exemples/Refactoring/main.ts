@@ -17,17 +17,15 @@ const BillServiceInit = () => {
     return new BillService(receiptRepository);
 }
 
-// const memberService = MemberServiceInit();
+const memberService = MemberServiceInit();
 
 const billService = BillServiceInit();
 
-// console.debug(memberService.findMember(1));
-//
-// // console.debug(findMember(10));
-// console.log(memberService.totalMemberBills(1));
-//
-//  test
-// shouldBeEqual(memberService.totalMemberBills(1), expectTotalMemberBills)
+console.debug(memberService.findMember(1));
+
+console.log(memberService.totalMemberBills(1));
+
+shouldBeEqual(memberService.totalMemberBills(1), expectTotalMemberBills)
 
 
 shouldBeEqual(billService.billsInfo('cat'), expectBillsInfo)
