@@ -131,7 +131,7 @@ Depending on their [type](https://www.jetbrains.com/help/pycharm/using-breakpoin
 
 하지만 이렇게 공부를 하고, 찾아본 후의 생각은 정말 세상에는 내가 모르는게 많다는 것 이였습니다.
 
-항상 영감과 깨달음을 주고, 도와주시는 우리 백엔드 개발자 분들 감사합니다.
+항상 영감과 깨달음을 주고, 도와주시는 백엔드 개발자 분들 감사합니다.
 
 ![image-20211024143411418](Debug.assets/image-20211024143411418.png) 
 
