@@ -120,10 +120,10 @@ Found 1 error.
 
 ```jsx
 {
-"compilerOptions":{...
-},
- "exclude" : ["<컴파일 제외시키고 싶은 파일명 or 폴더>",...],
- "include" : ["<컴파일을 해야하는 파일명 or 폴더>",...]
+  "compilerOptions":{...
+  },
+   "exclude" : ["<컴파일 제외시키고 싶은 파일명 or 폴더>",...],
+   "include" : ["<컴파일을 해야하는 파일명 or 폴더>",...]
 }
 ```
 
@@ -133,14 +133,16 @@ Found 1 error.
 
 true로 설정할 경우 컴파일을 할 때, 기존 스크립트와 수정된 스크립트를 비교한 후 변경된(수정된) 부분만 컴파일을 해준다.
 
--> 기존 스크립트는 저장, 수정된 스크립트로 컴파일 해줌
+- 기존 스크립트는 저장, 수정된 스크립트로 컴파일 해줌
 
-```
-   컴파일이 될 때마다, 기존 스크립트가 저장되기 때문에 컴퓨터 성능에 문제가 생길 수 있음  
+- 컴파일이 될 때마다, 기존 스크립트가 저장되기 때문에 컴퓨터 성능에 문제가 생길 수 있음  
+
+```json
+
 {
-"compilerOptions":{
-  "imcremental" : true (or false), 
-},
+  "compilerOptions":{
+    "imcremental" : true (or false), 
+  },
 }
 ```
 
@@ -152,10 +154,10 @@ imcremental 설정이 true일 때, 업데이트 되기 이전의 파일들을 �
 
 ```jsx
 {
-"compilerOptions":{
-  "imcremental" : true (or false), 
-  "toBuildInfoFile" : "./<경로지정>", 
-},
+  "compilerOptions":{
+    "imcremental" : true (or false), 
+    "toBuildInfoFile" : "./<경로지정>", 
+  },
 }
 ```
 
@@ -167,9 +169,9 @@ imcremental 설정이 true일 때, 업데이트 되기 이전의 파일들을 �
 
 ```jsx
 {
-"compilerOptions":{
-  "target" : "<컴파일 될 버전>"
-},
+  "compilerOptions":{
+    "target" : "<컴파일 될 버전>"
+  },
 }
 ```
 
@@ -191,9 +193,9 @@ ex) 노드 프로젝트 - CommonJS .. 브라우저환경 - ES6 ..
 
 ```jsx
 {
-"compilerOptions":{
-  "module" : "<모듈 선택>"
-},
+  "compilerOptions":{
+    "module" : "<모듈 선택>"
+  },
 }
 ```
 
@@ -205,9 +207,9 @@ ex) 노드 프로젝트 - CommonJS .. 브라우저환경 - ES6 ..
 
 ```jsx
 {
-"compilerOptions":{
-  "lib" : [<이용하고 싶은 라이브러리를 선택>]
-},
+  "compilerOptions":{
+    "lib" : [<이용하고 싶은 라이브러리를 선택>]
+  },
 }
 
 ex) "lib": ["es2015", "es2017", "dom"]
@@ -229,10 +231,10 @@ ex) "lib": ["es2015", "es2017", "dom"]
 
 ```jsx
 {
-"compilerOptions":{
-  "allowJs" : true (or false)
-  "checkJs" : true (or false)
-},
+  "compilerOptions":{
+    "allowJs" : true (or false)
+    "checkJs" : true (or false)
+  },
 }
 ```
 
@@ -244,9 +246,9 @@ ex) "lib": ["es2015", "es2017", "dom"]
 
 ```jsx
 {
-"compilerOptions":{
- "jsx" : true (or false)
-},
+  "compilerOptions":{
+   "jsx" : true (or false)
+  },
 }
 ```
 
@@ -260,9 +262,9 @@ ex) "lib": ["es2015", "es2017", "dom"]
 
 ```jsx
 {
-"compilerOptions":{
- "composite" : true (or false)
-},
+  "compilerOptions":{
+   "composite" : true (or false)
+  },
 }
 ```
 
@@ -276,9 +278,9 @@ ex) "lib": ["es2015", "es2017", "dom"]
 
 ```jsx
 {
-"compilerOptions":{
- "noEmit" : true (or false)
-},
+  "compilerOptions":{
+   "noEmit" : true (or false)
+  },
 }
 ```
 
@@ -290,15 +292,39 @@ ex) "lib": ["es2015", "es2017", "dom"]
 
 ```jsx
 {
-"compilerOptions":{
- "removeComment" : true (or false)
-},
+  "compilerOptions":{
+   "removeComment" : true (or false)
+  },
 }
 
 ex)
 <index.ts>                      컴파일       <index.js>
 console.log("hello world");      ->        "use strict";
 // 이건 콘솔이야                               console.log("hello world");
+```
+
+
+
+### esModuleInterop
+
+컴파일 과정에서 모듈을 import 할때
+
+- `import * as moment from "moment"` 
+
+- `const moment = require("moment")`
+
+이런 문법을
+
+- `import moment from "moment"`
+
+과 같이 사용할수 있게 한다.
+
+```typescript
+{
+  "compilerOptions":{
+   "esModuleInterop" : true (or false)
+  },
+}
 ```
 
 
