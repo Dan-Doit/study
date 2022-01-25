@@ -258,3 +258,103 @@ any 타입은 편하지만 점점 코드를 파괴합니다.
 >- 객체 타입에서 A&B인 값은 A와 B의 모든 속성을 가진다는것을 의미한다.
 >
 >  그리고 extends또한 같은 의미이다.
+
+
+
+## Item 8.
+
+### *타입 공간과 값 공간의 심벌 구분하기*
+
+타입스크립트의 심벌은 타입 공간이나 값 공간 중의 한곳에 존재한다.
+
+```typescript
+// 아래 함수와 타입은 이름은 같지만 서로 아무런 관계도 없습니다.
+
+interface Cylinder {
+  radius : number;
+  height : number;
+}
+
+const Cylinder = (radius: number, height: number) => ({radius, height})
+
+// instanceof는 자바스크립트의 런타임 연산자입니다.
+// instanceof는 아래 함수에서 연산을 하려하고 이는 타입이 아닌 함수 형식으로 인식을 합니다.
+// 따라서 인식하지 못하는 에러가 발생합니다.
+function volume(shape : unknown) {
+  if (shape instanceof Cylinder) {
+    shape.radius // error {} 형식에 radius가 존재하지 않습니다.
+  }
+}
+```
+
+>타입 스크립트에서 타입 선언은 `:` 을 사용합니다.
+>타입의 대한 단언은 `as` 를 이용합니다.
+
+위의 예제에서 발생한 문제로 우리는 `enum` 또는 `class` 형식으로 타입을 만들거나 초기값을 주어 문제를 해결할 수 있습니다.
+
+```typescript
+// 클래스에서 타입으로 쓰일때는 형태 (속성, 메스드)가 사용됩니다. => 연산시 함수로 인식
+// 값으로 쓰일때는 생성자가 사용됩니다. => 연산시 값으로 인식
+
+class Cylinder {
+  radius = 1;
+  height = 1;
+}
+
+function volume(shape : unknown) {
+  if (shape instanceof Cylinder) {
+    shape.radius // 정상
+  }
+}
+
+```
+
+> `instanceof` 외에도 `typeof` 또한 같은 방식으로 동작하는 자바스크립트 런타임 연산자입니다.
+>
+> 하지만 `class` 에 대한 `typeof`는 상황에 따라 다르게 동작합니다.
+
+```typescript
+const v = typeof Cylinder;  // 값이 "function"
+type T = typeof Cylinder;   // 타입이 typeof Cylinder
+
+// 클래스는 자바스크립트에서 실제 함수로 구현이 되기때문에 첫번째 값은 function type입니다.
+
+// 타입스크립트에서 class Cylinder는 인스턴스 타입이 아닙니다.
+// 따라서 2번째 값은 new 를 해야만 받아볼 수 있는 타입입니다. (현재는 typeof Cylinder라는 말도안되는 타입으로 나옴)
+// 결과값을 위해 선언을 해줍니다.
+
+declare let fn : T;
+const result : new fn(); // 타입이 Cylinder (정상적으로 타입이 나옴)
+
+// 또는 InstanceType 제너릭을 사용하여 생성자 타입을 인스턴스 타입으로 전환해줄수 있습니다.
+
+type C = InstanceType<typeof Cylinder>; // 타입이 Cylinder (정상적으로 타입이 나옴)
+```
+
+
+
+속성접근자 [ ] 는 타입으로 쓰일때에도 동일하게 동작합니다.
+
+```typescript
+// obj['field'] 와 obj.field는 값이 같더라도 타입이 다를수 있습니다.
+// 그래서 타입으로 활용될때는 [ ] 접근자를 사용하는것이 좋습니다.
+
+type PersonEl = Person['first'|'last']; // 타입은 string
+
+type Tuple = [string, number, Date];
+type TupleEl = Tuple[number]; // 타입은 string | number | Date
+```
+
+
+
+### 요약
+
+>- 타입스크립트 코드를 읽을 때 타입인지 값인지 구분하는 방법을 터득해야한다.
+>  타입스크립트 플레이그라운드를 활용해 개념을 잡는 것이 좋다.
+>- 모든 값은 타입을 가지지만, 타입은 값을 가지지 않는다. 
+>  type과 interface같은 키워드는 타입 공간에만 존재한다.
+>- class나 enum같은 키워드는 타입과 값 두가지로 사용될 수 있다.
+>- "foo" 는 문자열 리터럴이거나, 문자열 리터럴 타입일 수 있다.
+>  차이점을 알고 구별하는 방법을 터득해야한다.
+>- Typeof, this 그리고 많은 다른 연산자들과 키워드들은 타입 공간과 값 공간에서 다른 목적으로 사용될 수 있다.
+
