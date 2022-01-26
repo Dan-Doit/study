@@ -473,3 +473,103 @@ const el = document.body as unknown as Person; // 정상
 >- 화살표 함수의 반환 타입을 명시하는 방법을 터득해야한다.
 >- 타입스크립트보다 타입 정보를 더 잘 알고 있는 상황에서는 타입 단언문과 null 아님 ( ! ) 단언문을 사용한다.
 
+
+
+
+
+## Item 10.
+
+### 객체 래퍼 타입 피하기
+
+자바스크립트 객체에는 객체 이외에도 기본형 값들에 대한 일곱 가지 타입
+
+ (`string`, `number`, `boolean`,`null`,`undefined`,`simbol`,`bigint`)이 있다. 
+
+>`string`, `number`, `boolean`,`null` 초창기부터 존재했으며,
+>
+>`simbol`,`bigint` 는 ES2015 에서 추가되었다.
+
+보통 기본형은 불면이며 메서드를 가지지 않는다는 점에서 객체와 구분이된다.
+
+하지만 string의 경우는 메서드를 가지고 있는 것 처럼 보인다.
+
+```typescript
+'primitive'.charAt(3)
+// "m"
+```
+
+하지만 charAt은 string의 메서드가 아니라 객체인 `String` 타입에 정의되어있는 함수를 호출하게된다.
+
+string같은 기본형에서 charAt같은 메서드를 사용할 때, 자바스크립트는 기본형을 String객체로 래핑(wrap)하고,
+
+매서드를 호출하고, 마지막에 래핑한 객체를 버립니다.
+
+만약 String.prototype을 몽키-패치 한다면 위의 내부동작을 관찰 할 수 있다.
+
+위와 같은 식으로 몇가지 타입에는 래퍼 타입이 있습니다.
+
+```typescript
+// string => String
+// number => Number
+// boolean => Boolean
+// symbol => Symbol
+// bigint => Bigint
+null 과 undefined 에는 객체 래퍼가 없습니다.
+```
+
+
+
+### 요약
+
+타입스크립트는 자바스크립트의 상위집합(SuperSet)이다.
+
+> - 기본형 값에 메서드를 제공하기 위해 객체 래퍼 타입이 어떻게 쓰이는지 이해하자.
+> - 직접 사용하거나 인스턴스를 생성하는것은 피하도록하자!
+> - 타입 스크립트 객체 래퍼타입은 지양하고, 대신 기본형 타입을 사용해야한다.
+> - `String` 대신 `string`,  `Number` 대신 `number`, `Boolean` 대신 `boolean`, 
+>   `Symbol` 대신 `symbol`, `Bigint` 대신 `bigint`를 사용하도록 하자.
+
+
+
+### 심볼 (Symbol) 이란?
+
+>1997년 자바스크립트가 ECMAScript로 처음 표준화된 이래로 자바스크립트는 6개의 타입을 가지고 있었다.
+>
+>- 원시 타입 (primitive data type)
+>  - Boolean
+>  - null
+>  - undefined
+>  - Number
+>  - String
+>- 객체 타입 (Object type)
+>  - Object
+>
+>심볼(symbol)은 ES6에서 새롭게 추가된 7번째 타입으로 변경 불가능한 원시 타입의 값이다. 심볼은 주로 이름의 충돌 위험이 없는 유일한 객체의 프로퍼티 키(property key)를 만들기 위해 사용한다.
+
+### 빅인트 (BigInt) 란?
+
+>`BigInt`는 길이의 제약 없이 정수를 다룰 수 있게 해주는 숫자형이다.
+>
+>정수 리터럴 끝에 `n`을 붙이거나 함수 `BigInt`를 호출하면 문자열이나 숫자를 가지고 `BigInt` 타입의 값을 만들 수 있다.
+>
+>```typescript
+>const bigint = 1234567890123456789012345678901234567890n;
+>
+>const sameBigint = BigInt("1234567890123456789012345678901234567890");
+>
+>const bigintFromNumber = BigInt(10); // 10n과 동일합니다.
+>```
+>
+>단항 연산자를 제외한 나머지 문법은 Number와 같이 동작합니다. ( `+`,` -`,` *`,` %`, `/`, `<`, `>` 등등.. ) 
+>
+>```typescript
+>// 단항 덧셈 연산자 +value를 사용하면 value를 손쉽게 숫자형으로 바꿀 수 있습니다.
+>
+>// 그런데 혼란을 방지하기 위해 bigint를 대상으로 하는 연산에선 단항 덧셈 연산자를 지원하지 않습니다.
+>
+>let bigint = 1n;
+>
+>alert( +bigint ); // 에러
+>```
+>
+>
