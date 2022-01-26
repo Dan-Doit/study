@@ -358,3 +358,118 @@ type TupleEl = Tuple[number]; // 타입은 string | number | Date
 >  차이점을 알고 구별하는 방법을 터득해야한다.
 >- Typeof, this 그리고 많은 다른 연산자들과 키워드들은 타입 공간과 값 공간에서 다른 목적으로 사용될 수 있다.
 
+
+
+
+
+## Item 9.
+
+### *타입 단언보다는 타입 선언을 사용하기*
+
+타입스크립트에서 변수에 값을 할당하고 타입을 부여하는 방법은 두 가지이다.
+
+```typescript
+interface Person { name : string };
+
+// 타입을 선언합니다.
+const alice: Person = { name: 'Alice' }; // 타입은 Person
+
+// 타입을 단언합니다.
+const bob = { name: 'Bob' } as Person;   // 타입은 Person
+```
+
+두가지 방법은 결과가 같아 보이지만 전혀 그렇지 않다.
+
+첫번째 방법은 타입을 선언 하였기 때문에 다음과같이 코드를 작성할경우 에러가 발생한다.
+
+```typescript
+const alice: Person = { }; // name이 존재하지 않습니다.
+```
+
+하지만 단언을 할경우 에러가 발생하지 않고 Person으로 단언한다.
+
+```typescript
+const bob = { } as Person;   // 정상
+```
+
+위와 같이 타입 단언은 타입을 강제로 지정했으니 타입체커에 이를 무시하라고 말한다.
+
+이는 속성을 추가할때 또한 마찬가지이다.
+
+```typescript
+const alice : Person = {
+  name : 'Alice',
+  age : 18 // 개체 리터럴은 알려진 속성만 지정할수 있으며 'Person' 속성에는 'age'가 없습니다.
+ }
+
+const bob = {
+  name : 'Bob',
+  age : 20
+} as Person; // 정상
+```
+
+>타입스크립트에서 이런코드를 본적이 있을것이다.
+>
+>```typescript
+>const bob = <Person>{ };
+>```
+>
+>이는 단언문과 같은 문법이기도 하다.
+>
+>```typescript
+>const bob = { } as Person;
+>```
+>
+>하지만 리엑트 컴포넌트 태그로 인식되어 현재는 잘 사용하지 않는다고한다.
+
+
+
+그러면 선언을 위주로 사용하지만 **단언문은 어디서 사용하면 좋을까?**
+
+- DOM 엘리먼트에 사용하기
+
+  >타입스크립트는 DOM에 접근 할수 없기때문에 #myButton이 button 인줄 모릅니다.
+  >
+  >따라서 이런식으로 단언문으로 지정해 줄 수 있습니다.
+  >
+  >```typescript
+  >document.querySelector('#myButton').addEventListner('click', e => {
+  >  e.currentTarget
+  >  const button = e.currentTarget as HTMLButtonElement;
+  >  button
+  >})
+  >```
+
+- 자주쓰이는 특별한 문법( ! ) 을 사용하여 null이 아님을 단언하는 경우
+
+  >변수의 접두사로 쓰인 ! 는 boolean의 부정문이다. 그러나 접미사로 쓰인 ! 는 그 값이 null이 아니라는 단언문으로 해석된다.
+  >
+  >! 는 일반적인 단언문으로 해석해야 하며 이는 컴파일 과정에서 제거되어 타입체커에서 알 수 없으므로 반드시 **null이 아니라고**
+  >
+  >**확실하는곳에서 사용해야한다**.
+  >
+  >```typescript
+  >const elNull = document.getElementById('foo');
+  >const el = document.getElementById('foo')!;
+  >```
+
+
+
+단언문은 모든 서브 타입에 동작을하며 관계가 없지않는 이상 에러를 발생하지 않는다.
+
+하지만 관계가 없는 타입을 단언하려면 `unknown` 을 사용하면된다.
+
+`unknown` 은 모든 타입의 서브 타입이기 때문이다.
+
+하지만 이는 무언가 위험한 동작을 하고있다는것을 알아야 한다.
+
+```typescript
+const el = document.body as unknown as Person; // 정상
+```
+
+### 요약
+
+>- 타입 단언 ( as Type ) 보다 타입 선언 ( : Type ) 을 사용해야한다.
+>- 화살표 함수의 반환 타입을 명시하는 방법을 터득해야한다.
+>- 타입스크립트보다 타입 정보를 더 잘 알고 있는 상황에서는 타입 단언문과 null 아님 ( ! ) 단언문을 사용한다.
+
