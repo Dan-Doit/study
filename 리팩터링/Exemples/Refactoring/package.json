@@ -8,5 +8,8 @@
     "start": "node dist/main.js",
     "prestart": "tsc",
     "pretest": "tsc"
+  },
+  "devDependencies": {
+    "prettier": "2.5.1"
   }
 }

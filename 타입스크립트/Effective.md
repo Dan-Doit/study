@@ -632,3 +632,54 @@ const h = { room : 3, restroom: 1, cat: 3 } as House;
 >   역할이 다르다. 할당의 개념을 정확히 알아야 잉여 속성 체크와 일반적인 구조적 할당 가능성 체크를 구분할 수 있다.
 > - 잉여 속성 체크에는 한계가 있다. 임시 변수를 도입하면 잉여 속성 체크를 건너뛸 수 있다는 점을 기억해야한다.
 
+
+
+
+
+## Item 12.
+
+### *함수 표현식에 타입 적용하기*
+
+타입스크립트 및 자바스크립트에서는 함수 `statement(문장)` 과 함수 `expression(표현)` 을 다르게 인식한다.
+
+```typescript
+function rollDice1(sides: number):number {/* 내용 생략 */} // 문장
+const rollDice2 = function(sides : number) : number {/* 내용 생략 */} // 표현식
+const rollDice3 = (sides:number) : number => {/* 내용 생략 */} // 표현식
+```
+
+타입스크립트에서는 함수 표현식을 사용하는 것이 좋다.
+
+함수의 매개변수 부터 반환값까지 전체를 함수 타입으로 선언하여 함수 표현식에 재사용할 수 있다는 장점이 있기 때문이다.
+
+```typescript
+type DiceRollFn = (sides: number) => number;
+const rollDice: DiceRollFn = sides => {/* 내용 생략 */}
+```
+
+마우스로 sides 에 올려보면 이미 타입을 `number`로 인식하였음이 보인다.
+
+![image-20220203102459734](Effective.assets/image-20220203102459734.png)
+
+이와 비슷한 예제로 HTTP fetch함수의 타입을 재정의 해보자.
+
+```typescript
+// 함수의 시그니처를 그대로 참조할때 typeof fn을 사용하면 좋다.
+const checkFetch: typeof fetch = async (input, init) => {
+  const response = await fetch(input, init);
+
+  if (!response.ok) {
+    throw new Error('Request failed: ' + response.status);
+  }
+  return response;
+};
+```
+
+
+
+### 요약
+
+>- 매개변수나 반환 값에 타입을 명시하기보다는 함수 표현식 전체에 타입 구문을 적용하는것이 좋다.
+>- 만약 같은 타입 시그니처를 반복적으로 작성한 코드가 있다면 함수 타입을 분리해 내거나 이미 존재하는 타입을 찾아보도록하자.
+>- 라이브러리를 직접 만든다면 공통 콜백에 타입을 제공하도록 하자.
+>- **다른 함수의 시그니처를 참조하려면** `typeof fn`을 사용하자.
