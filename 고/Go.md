@@ -530,7 +530,6 @@ func main() {
 // 입력값 : 1
 // 입력값 : (enter)
 // 결과값 : 1 newline in input does not match format
-
 ```
 
 
