@@ -683,3 +683,208 @@ const checkFetch: typeof fetch = async (input, init) => {
 >- 만약 같은 타입 시그니처를 반복적으로 작성한 코드가 있다면 함수 타입을 분리해 내거나 이미 존재하는 타입을 찾아보도록하자.
 >- 라이브러리를 직접 만든다면 공통 콜백에 타입을 제공하도록 하자.
 >- **다른 함수의 시그니처를 참조하려면** `typeof fn`을 사용하자.
+
+
+
+
+
+## Item 13.
+
+### *타입과 인터페이스의 차이점 알기*
+
+타입 스크립트에서 명명된 타입을 지정하는 방법은 2가지가 있다.
+
+```typescript
+// 타입으로 만들기
+type Tstate = {
+  name: string;
+  capital: string;
+};
+
+// 인터페이스로 만들기
+interface Istate {
+  name: string;
+  capital: string;
+}
+
+// 클래스로 타입을 지정할 수 있지만 값(item8)을 가지고 있으므로 제외
+
+```
+
+둘의 사용은 매우 비슷하기때문에 이를 분간하려면 둘사이에 존재하는 차이를 분명히 알아야한다.
+
+먼저 둘의 비슷한점 부터 알아보도록하자!
+
+1. **인덱스 시그니처 사용가능**
+
+```typescript
+type Tstate = {
+  [key: string]: string;
+};
+
+interface Istate {
+  [key: string]: string;
+}
+```
+
+2. **함수 타입 정의 가능**
+
+```typescript
+type Tfn = (x: number) => string;
+
+interface Ifn { (x: number): string; }
+```
+
+3. **제네릭 사용 가능**
+
+```typescript
+type Tpair<T> = {
+  first: string;
+  second: string;
+};
+
+interface Ipair<T> {
+  first: string;
+  second: string;
+}
+```
+
+4. **호출 가능한 객체 함수**
+
+```typescript
+type TfnWithProprties = {
+  (x: number): string;
+  prop: string;
+};
+
+interface IfnWithProperties {
+  (x: number): string;
+  prop: string;
+}
+```
+
+5. **타입 확장**
+
+```typescript
+type Tstate = {
+  name: string;
+};
+
+interface Istate {
+  age: number;
+}
+
+// 복잡한 union 타입 확장 가능.
+type Textends = Istate & { name: string };
+
+// 주의점! 복잡한 union 타입은 확장할 수 없다.
+interface Iextends extends Tstate {
+  age: number;
+} 
+
+const Test: Textends = {
+  name: 'dan',
+  age: 1,
+}; // 정상
+
+const Iest: Iextends = {
+    name: 'dan',
+    age: 1,
+}; // 정상
+```
+
+6. **클래스 구현**
+
+```typescript
+type Tstate = {
+  name: string;
+};
+
+interface Istate {
+  age: number;
+}
+
+class StateT implements Tstate {
+  name: 'dan';
+}
+
+class StateI implements Istate {
+  age: 1;
+}
+```
+
+
+
+다음은 차이점이다.
+
+1. **Type의 Union 타입 확장**
+
+```typescript
+type AorB = 'a' | 'b';
+
+interface BorA {
+    // 불가능
+}
+```
+
+2. **Type의 간결한 문법**
+
+```typescript
+// 타입으로 배열의 타입을 정의 할경우
+type TPair = [number, number];
+// 인터페이스로 배열의 타입을 정의할경우
+interface IPair {
+  0: number;
+  1: number;
+  length: 2;
+}
+
+// 더 많은 예제
+type StringList = string;
+type NameNums = [string, ...number[]];
+```
+
+3. **Interface의 보강 기능**
+
+```typescript
+interface Istate {
+  name: string;
+  age: number;
+}
+
+interface Istate {
+  language: string;
+}
+
+// 따로 선언을 하지 않아도 같은 이름이면 보강이됩니다.
+const person: Istate = {
+  name: 'dan',
+  age: 22,
+  language: 'typescript',
+};
+```
+
+
+
+이 와같은 차이점과 공통점으로 우리는 어떤것이 더 좋은 타입 설정인지 판가름 해야한다.
+
+예를 들어 프로젝트의 타입이 복잡하다면 고민하지 않고, Type을 사용하는것이 좋을것이다.
+
+보강가능성이 있다면 당연히 우리는 Interface를 사용해야 할것이다.
+
+만약 API 데이터에 대한 타입을 지정할 때는 Interface가 더 효율적이다.
+
+이유는 데이터가 변경될때 보강을 활용하면 매우 편리하게 데이터를 정의 할수 있기 때문이다.
+
+하지만 내부적으로 사용되는 타입에 선언 병합이 발생하는것은 잘못된 것이기에 이때는 Type을 더 추천하는 바이다.
+
+
+
+### 요약
+
+> - 타입과 인터페이스의 차이점과 비슷한 점을 이해하자
+> - 한 타입을 type과 interface 두 가지 문법을 사용해서 작성하는 방법을 터득하자
+> - 프로젝트에서 어떤 문법을 사용할지 결정할 때 한가지 일관된 스타일을 확립하고, 보강기법이 필요한지 고려하자.
+
+
+
