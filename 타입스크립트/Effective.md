@@ -688,195 +688,98 @@ const checkFetch: typeof fetch = async (input, init) => {
 
 
 
-## Item 13.
+## Item 14.
 
-### *타입과 인터페이스의 차이점 알기*
+### *타입 연산과 제너릭 사용으로 반복 줄이기*
 
-타입 스크립트에서 명명된 타입을 지정하는 방법은 2가지가 있다.
+DRY(Don't repeat yourself) 원칙과 같이 같은 코드를 반복하지 않는 것은 프로그래머의 기본 소양 이라고할수있다.
+
+하지만 기본 코드를 함수로 바꿔서 DRY원칙을 지켯을지는 몰라도 Type에 대해서는 그렇지 못하는 경우가 많다.
+
+다음은 타입에서 코드가 반복되는 예제이다.
 
 ```typescript
-// 타입으로 만들기
-type Tstate = {
-  name: string;
-  capital: string;
+interface Person {
+  firstName: string;
+  lastName: string;
 };
 
-// 인터페이스로 만들기
-interface Istate {
-  name: string;
-  capital: string;
-}
-
-// 클래스로 타입을 지정할 수 있지만 값(item8)을 가지고 있으므로 제외
-
-```
-
-둘의 사용은 매우 비슷하기때문에 이를 분간하려면 둘사이에 존재하는 차이를 분명히 알아야한다.
-
-먼저 둘의 비슷한점 부터 알아보도록하자!
-
-1. **인덱스 시그니처 사용가능**
-
-```typescript
-type Tstate = {
-  [key: string]: string;
-};
-
-interface Istate {
-  [key: string]: string;
-}
-```
-
-2. **함수 타입 정의 가능**
-
-```typescript
-type Tfn = (x: number) => string;
-
-interface Ifn { (x: number): string; }
-```
-
-3. **제네릭 사용 가능**
-
-```typescript
-type Tpair<T> = {
-  first: string;
-  second: string;
-};
-
-interface Ipair<T> {
-  first: string;
-  second: string;
-}
-```
-
-4. **호출 가능한 객체 함수**
-
-```typescript
-type TfnWithProprties = {
-  (x: number): string;
-  prop: string;
-};
-
-interface IfnWithProperties {
-  (x: number): string;
-  prop: string;
-}
-```
-
-5. **타입 확장**
-
-```typescript
-type Tstate = {
-  name: string;
-};
-
-interface Istate {
-  age: number;
-}
-
-// 복잡한 union 타입 확장 가능.
-type Textends = Istate & { name: string };
-
-// 주의점! 복잡한 union 타입은 확장할 수 없다.
-interface Iextends extends Tstate {
-  age: number;
-} 
-
-const Test: Textends = {
-  name: 'dan',
-  age: 1,
-}; // 정상
-
-const Iest: Iextends = {
-    name: 'dan',
-    age: 1,
-}; // 정상
-```
-
-6. **클래스 구현**
-
-```typescript
-type Tstate = {
-  name: string;
-};
-
-interface Istate {
-  age: number;
-}
-
-class StateT implements Tstate {
-  name: 'dan';
-}
-
-class StateI implements Istate {
-  age: 1;
-}
-```
-
-
-
-다음은 차이점이다.
-
-1. **Type의 Union 타입 확장**
-
-```typescript
-type AorB = 'a' | 'b';
-
-interface BorA {
-    // 불가능
-}
-```
-
-2. **Type의 간결한 문법**
-
-```typescript
-// 타입으로 배열의 타입을 정의 할경우
-type TPair = [number, number];
-// 인터페이스로 배열의 타입을 정의할경우
-interface IPair {
-  0: number;
-  1: number;
-  length: 2;
-}
-
-// 더 많은 예제
-type StringList = string;
-type NameNums = [string, ...number[]];
-```
-
-3. **Interface의 보강 기능**
-
-```typescript
-interface Istate {
-  name: string;
-  age: number;
-}
-
-interface Istate {
-  language: string;
-}
-
-// 따로 선언을 하지 않아도 같은 이름이면 보강이됩니다.
-const person: Istate = {
-  name: 'dan',
-  age: 22,
-  language: 'typescript',
+interface PersonWithDate {
+  firstName: string;
+  lastName: string;
+  date: Date;
 };
 ```
 
+만약 저런식으로 코딩을 한다면 `Person` 타입에 middleName이 추가 된다고 해도 `PersonWithDate` 에서는 이를 인식하지 못한다.
+
+다음과 같이 바꿀수 있도록 하자.
+
+```typescript
+interface Person {
+  firstName: string;
+  lastName: string;
+}
+
+interface PersonWithDate extends Person {
+  date: Date;
+}
+```
+
+`Type`으로도 다음과 같이 해결을 할수 있다.
+
+```typescript
+interface State {
+  userId: string;
+  pageTitle: string;
+  recentFiles: string[];
+  pageContents: string;
+}
+
+interface TopState {
+  userId: string;
+  pageTitle: string;
+  recentFiles: string[];
+}
+```
+
+위 와같은 `interface`에서 `TopState`를 확장하여 `State` 구성하는것 보다, `State`의 부분 집합으로 `TopState`를 구성해야 한다면
+
+다음과 같은 방법을 적용해보도록 하자.
+
+```typescript
+type TopState = {
+  userId: State['userId'];
+  pageTitle: State['pageTitle'];
+  recentFiles: State['recentFiles'];
+};
+```
+
+이와 같은 방법을 부분집합으로 타입정의 하기 라고한다.
+
+하지만 이 방법은 완벽하게 중복 제거가 되지 않는다.
+
+그래서 다음 방법인 **매핑된 타입** 을 사용하도록 하자.
+
+정의에는 변함이 없지만 중복은 덜 한다고 한다.
+
+```typescript
+type TopState = {
+  [k in 'userId' | 'pageTitle' | 'recentFiles']: State[k];
+};
+```
+
+이런 방법은 필드를 루프도는 것과 같은 방식이다. 이 패턴은 표준 라이브러리에서도 일반적으로 찾을수 있으며, `Pick` 이라고 한다.
+
+정의가 완전하지는 않지만 다음과 같이 사용할 수 있다.
+
+```typescript
+type TopState = Pick<State, 'userId' | 'pageTitle' | 'recentFiles'>;
+```
+
+여기서 `Pick`은 제네릭 타입이다. `Pick`을 사용하는 것은 함수를 호출하는것과 마찬가지이다.
 
 
-이 와같은 차이점과 공통점으로 우리는 어떤것이 더 좋은 타입 설정인지 판가름 해야한다.
-
-예를 들어 프로젝트의 타입이 복잡하다면 고민하지 않고, Type을 사용하는것이 좋을것이다.
-
-보강가능성이 있다면 당연히 우리는 Interface를 사용해야 할것이다.
-
-만약 API 데이터에 대한 타입을 지정할 때는 Interface가 더 효율적이다.
-
-이유는 데이터가 변경될때 보강을 활용하면 매우 편리하게 데이터를 정의 할수 있기 때문이다.
-
-하지만 내부적으로 사용되는 타입에 선언 병합이 발생하는것은 잘못된 것이기에 이때는 Type을 더 추천하는 바이다.
 
 
 
@@ -888,3 +791,16 @@ const person: Istate = {
 
 
 
+
+
+```
+num = int(input())
+count = 0
+honeyComb = 1
+
+while num > honeyComb:
+    count += 1
+    honeyComb += 6 * count
+
+print(count+1)
+```
