@@ -698,6 +698,10 @@ DRY(Don't repeat yourself) 원칙과 같이 같은 코드를 반복하지 않는
 
 다음은 타입에서 코드가 반복되는 예제이다.
 
+
+
+### 타입 반복 줄이기
+
 ```typescript
 interface Person {
   firstName: string;
@@ -727,6 +731,10 @@ interface PersonWithDate extends Person {
 ```
 
 `Type`으로도 다음과 같이 해결을 할수 있다.
+
+
+
+### Pick 방법
 
 ```typescript
 interface State {
@@ -769,7 +777,7 @@ type TopState = {
 };
 ```
 
-이런 방법은 필드를 루프도는 것과 같은 방식이다. 이 패턴은 표준 라이브러리에서도 일반적으로 찾을수 있으며, `Pick` 이라고 한다.
+이런 방법은 필드를 루프도는 것과 같은 방식이다. **이 패턴은 표준 라이브러리에서도 일반적으로 찾을수 있으며, `Pick` 이라고 한다.**
 
 정의가 완전하지는 않지만 다음과 같이 사용할 수 있다.
 
@@ -781,26 +789,130 @@ type TopState = Pick<State, 'userId' | 'pageTitle' | 'recentFiles'>;
 
 
 
+### Partital 방법
+
+제네릭을 사용하면 다음과 같은 타입 반복을 줄일수 있다.
+
+```typescript
+interface Member {
+  firstName: string;
+  lastName: string;
+  nation: string;
+  birthday: Date;
+}
+
+interface UpdateMember {
+  firstName?: string;
+  lastName?: string;
+  nation?: string;
+  birthday?: Date;
+}
+```
+
+하지만 이렇게 반복작성되는 코드 보다는 다음과 같이 처리하는편이 좋다.
+
+```typescript
+type UpdateMember = {
+  [key in keyof Member]?: Member[key];
+};
+```
+
+**이 패턴 또한 표준 라이브러리에서 `Partital` 이라는 이름으로 사용되고있다.**
+
+
+
+### 초기화된 값을 타입으로 사용하기
+
+값의 형태에 해당하는 타입을 정의하고 싶을 때가 있는데 typeof를 사용하도록하자.
+
+```typescript
+const INIT_OPTIONS = {
+  id: 1,
+  name: 'dan',
+  nation: 'korea',
+  birthday: '19930501',
+};
+
+type Options = typeof INIT_OPTIONS;
+```
+
+이 코드는 자바스크립트의 연산자 typeof를 사용한 것처럼 보이지만, 
+
+실제로는 타입스크립트 단계에서 연산되며 훨씬 더 정확하게 타입을 표현한다고한다.
+
+
+
+### 함수에서 리턴되는 값 타입으로 사용하기
+
+다음과같이 함수에서 리턴되는 타입을 다른 타입으로 만들고 싶을경우가 있다.
+
+```typescript
+const getMemberInfo = (member: Member) => {
+  return {
+    id,
+    address,
+    mobile,
+    ...member,
+  };
+};
+```
+
+이때는 타입스크립트에서 정의해놓은 `ReturnType` 제너릭을 사용하면 좋다.
+
+```typescript
+type MemberInfo = ReturnType<typeof getMemberInfo>
+```
+
+`ReturnType` 제너릭은 함수의 값인 getMemberInfo가 아니라 **함수의 타입**인 typeof getMemberInfo으로 적용을 한다.
+
+
+
+### 제너릭을 넓게 활용하기
+
+제너릭 타입은 타입을 위한 함수와 같다.
+
+그리고 함수는 코드에 대한 DRY원칙을 지킬 때 매우 유용하게 사용된다.
+
+따라서 타입에 대한 DRY원칙의 함수에서 매개변수로 매핑할수 있는 값을 제한하기 위해 
+
+타입 시스템을 사용하는 것처럼 제너릭 타입에서 매개변수를 제한할 수 있는 방법이 필요하다.
+
+제너릭에서 매개변수를 제한할 수 있는 방법은 `extends` 를 활용하는것이다.
+
+```typescript
+interface Name {
+  firstName: string;
+  lastName: string;
+}
+
+type DancingDuo<T extends Name> = [T, T];
+
+const couple1: DancingDuo<Name> = [
+  {
+    firstName: 'Dan',
+    lastName: 'Cho',
+  },
+  {
+    firstName: 'Marilyn',
+    lastName: 'Monroe',
+  },
+];
+
+const couple2: DancingDuo<{ firstName: string }> = [
+//														^^^^^^^^^^^^ Error : Name 타입에 필요한 lastName 속성이 없습니다.
+  { firstName: 'Dan' },
+  { firstName: 'Duo' },
+];
+```
+
 
 
 ### 요약
 
-> - 타입과 인터페이스의 차이점과 비슷한 점을 이해하자
-> - 한 타입을 type과 interface 두 가지 문법을 사용해서 작성하는 방법을 터득하자
-> - 프로젝트에서 어떤 문법을 사용할지 결정할 때 한가지 일관된 스타일을 확립하고, 보강기법이 필요한지 고려하자.
-
-
-
-
-
-```
-num = int(input())
-count = 0
-honeyComb = 1
-
-while num > honeyComb:
-    count += 1
-    honeyComb += 6 * count
-
-print(count+1)
-```
+> - DRY 원칙을 타입에도 최대한 적용해야 한다.
+> - 타입에 이름을 붙여서 반복을 피해야합니다. extends를 사용하여 인터페이스 필드의 반복을 피해야한다.
+> - 타입들 간의 매핑을 위해 타입스크립트가 제공한 도구들을 공부하면 좋다. ( keyof, typeof, 인덱싱, 매핑된타입 등)
+> - 제너릭 타입은 타입을 위한 함수와 같다. 
+> - 타입을 반복하는 대신 제너릭타입을 사용하여 타입들 간에 매칭을 사용하는것이 좋다.
+> - 제너릭타입을 제한하려면 extends응 사용하면 된다.
+> - 표준 라이브러리에 정의된 Pick, Partial, ReturnType 같은 제너릭 타입에 익숙해지자.
