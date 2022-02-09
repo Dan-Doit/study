@@ -916,3 +916,146 @@ const couple2: DancingDuo<{ firstName: string }> = [
 > - 타입을 반복하는 대신 제너릭타입을 사용하여 타입들 간에 매칭을 사용하는것이 좋다.
 > - 제너릭타입을 제한하려면 extends응 사용하면 된다.
 > - 표준 라이브러리에 정의된 Pick, Partial, ReturnType 같은 제너릭 타입에 익숙해지자.
+
+
+
+## Item 15.
+
+### 동적 데이터에 인덱스 시그니처 사용하기
+
+자바스크립트의 장점 중 하나는 바로 객체를 생성하는 문법이 간단하는것이다.
+
+```typescript
+const rocket = {
+  name: 'Falcon 9',
+  variant: 'Black 5',
+  thrust: '7,607 kN',
+};
+```
+
+자바스크립트 객체는 문자열 키를 타입의 값에 관계없이 매핑한다.
+
+타입스크립트에서는 타입에 '인덱스 시그니처'를 명시하여 우연하게 매핑을 표현 할 수있다.
+
+```typescript
+type Rocket = { [property: string]: string };
+
+const rocket: Rocket = {
+  name: 'Falcon 9',
+  variant: 'Black 5',
+  thrust: '7,607 kN',
+};
+```
+
+`[property: string]: string ` 은 '인덱스 시그니처이며' 다음 3가지 의미를 담고있다.
+
+- 키의 이름 : 키의 위치만 표시하는 용도이다. 타입 체커에서는 사용하지 않는다.
+- 키의 타입 : `string` 이나 `number` 또는 `symbol` 의 조합이어야 하지만, 보통은 `string` 타입을 사용한다.
+- 값의 타입 : 어떤 것이든 될수 있다.
+
+이렇게 타입 체크가 수행되면 다음 4가지 단점을이 드러난다.
+
+- 잘못된 키를 포함해 모든 키를 허용한다. name대신 Name으로 작성하더라도 유효한 Roket 타입이다.
+- 특정 키가 필요하지않는다. { } 또한 유효한 Roket 타입이다.
+- 키마다 다른 타입을 가질수 없습니다. 예를들어 thrust 는 string이 아니라 number 여야 할 수도있다.
+- 타입스크립트 언어 서비스는 다음과 같은 경우에 도움을 받을수 없다. name : 을 입력할 때, 키는 무엇이든 가능하기 때문에 자동 완성 기능이 동작하지 않는다.
+
+결론을 말하자면 '인덱스 시그니처는' 부정확 하므로 더 나은 방법을 찾아야한다.
+
+
+
+**하지만 다음과 같은 예로는 '인덱스 시그니처'를 사용하기에 적합하다.**
+
+CSV 파일처럼 row와 column 이름이 있고, 데이터 행을 열과 이름과 값으로 매핑하는 객체로 나타낼경우
+
+```typescript
+// 만약 미리 row와 column을 알고있다면 이런식으로 사용할수 있다.
+
+interface ProductRow {
+  id: string;
+  name: string;
+  price: string;
+  description: string;
+}
+
+declare let csvData: string;
+
+const products = parseCSV(csvData) as unknown as ProductRow[];
+```
+
+
+
+**연관 배열의 경우, 객체에 인덱스 시그니처를 사용하는 대신 Map타입을 사용하는것을 고려할수 있다.**
+
+
+
+**다음과 같은 예로는 '인덱스 시그니처'로 모델링 하지 말아야한다.**
+
+같은 키가 있지만 얼마나 많이 있는지 모르는경우 다음과 같은 방법으로 적용을 할수 있다.
+
+```typescript
+// 너무 광범위한 방법
+interface Row1 {
+  [cloumn: string]: number;
+}
+// 최선의 방법
+interface Row2 {
+  a?: number;
+  b?: number;
+  c?: number;
+  d?: number;
+}
+// 가장 정확하지만 사용하기 번거러움
+type Row3 =
+  | { a: number }
+  | { a: number; b: number }
+  | { a: number; b: number; c?: number }
+  | { a: number; b: number; c?: number; d?: number };
+```
+
+하지만 위와같이 단점이 분명하기에 다음과 같은 방안으로 해결을 해보자.
+
+- Record 제네릭 사용하기
+
+```typescript
+// 타입의 유연성을 제공하는 제너릭 타입이다.
+// 특히, string의 부분 집합을 사용할 수 있다.
+type Vec3D = Record<'x' | 'y' | 'z', number>;
+
+// 아래 타입과 같습니다.
+type Vec3D = {
+  x: number;
+  y: number;
+  z: number;
+};
+```
+
+- 매핑된 타입을 사용하자
+
+```typescript
+type Vec3D = { [k in 'x' | 'y' | 'z']: number };
+// 위와 같은 타입입니다.
+type Vec3D = {
+  x: number;
+  y: number;
+  z: number;
+};
+
+// 또는 조건부 타입을 활용하여 타입을 정할수도 있습니다.
+type ABC = { [k in 'a' | 'b' | 'c']: k extends 'b' ? string : number };
+// 위와 같은 타입입니다.
+type ABC = {
+  a: number;
+  b: string;
+  c: number;
+};
+```
+
+
+
+### 요약
+
+> - 런타임 때까지 객체의 속성을 알 수 없을경우에만 (예를 들어 SCV파일) 인덱스 시그니처를 사용하도록하자.
+> - 안전한 접근을 위해 인덱스 시그니처의 값 타입에 undefined를 추가하는것을 고려하자.
+> - 가능하다면 인터페이스, Record, 매핑된 타입 같은 인덱스 시그니처보다 정확한 타입을 사용하는것이 좋다.
+
