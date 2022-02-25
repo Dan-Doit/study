@@ -221,3 +221,23 @@ $ systemctl enable service.service
 # enable한 서비스 제거
 $ systemctl disable service.service
 ```
+
+
+
+
+
+# SSH 비밀번호 변경
+
+```bash
+# 폴더 이동
+$ cd ~/.ssh
+
+# 비밀번 호(passphrase) 변경하기
+$ ssh-keygen -f id_rsa -p
+Enter old passphrase: # 이전 비밀번호
+Key has comment '/home/lesstif/.ssh/id_rsa'
+Enter new passphrase (empty for no passphrase): # 새로운 비밀번호
+Enter same passphrase again: # 새로운 비밀번호 확인
+Your identification has been saved with the new passphrase.
+```
+
