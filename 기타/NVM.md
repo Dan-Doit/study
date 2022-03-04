@@ -129,4 +129,4 @@ $ nvm alias default 8.9.4
 $ nvm alias default node
 ```
 
-​		터미널을 시작하면 앞으로도 디폴트로 정한 노드가 실행됩니다.
+​		터미널을 시작하면 앞으로도 Default로 정한 노드가 실행됩니다.
