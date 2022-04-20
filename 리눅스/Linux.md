@@ -31,6 +31,23 @@ $ docker ps -a
 $ docker ps -l
 ```
 
+- docker 컨테이너 접속
+
+  ```shell
+  # mac 에서 가상환경인 docker files 및 config 확인 시 필요
+  # mac 에서 docker는 실제 환경이 아닌 vm 환경에서 컨테이너를 생성하기때문에 실제 경로를 확인하려면 따로
+  # vm에 접속할 권한을 얻어야합니다.
+  $ docker run -it --privileged --pid=host debian nsenter -t 1 -m -u -n -i sh
+  ```
+
+  ```shell
+  $ docker exec -it energyx_local /bin/bash
+  ```
+
+  컨테이너 이름 또는 아이디로 접속 가능하며 한칸 뛰고 `/bin/bash`를 사용한다.
+
+  
+
 ## [kill] 프로세스종료
 
 - kill 은 ps와 자주 사용되며 프로세스를 종료할때 사용합니다. (-9, -15) 옵션이 있는데 각각 강제종료, 종료입니다.
