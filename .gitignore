@@ -2,7 +2,7 @@
 *.idea
 /깃
 /SSL
-/네스트JS
+/네스트JS/NestJS.md
 /도커
 /쉘
 /토이프로젝트
