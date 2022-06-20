@@ -249,7 +249,104 @@ setResponseClearCookie(res: Response): boolean {
 
 
 
+
+
 ### Graphql에서 Cookie 보내기
 
+Graphql에서도 마찬가지로 쿠키를 보낼수 있습니다.
 
+애초에 Graphql 이라는 것이 HTTP 프로토콜 통신이기 때문에 비슷한 방식으로 쿠키를 담아서 전송합니다.
+
+먼저 `main.ts` 입니다.
+
+```typescript
+app.use(cookieParser());
+app.enableCors({ credentials: true, origin: true });
+```
+
+마찬가지로 CORS 설정을 해줍니다.
+
+다음은 `app.module.ts` 에서 `graphql` 설정 부분을 다음과 같이 수정합니다.
+
+```typescript
+GraphQLModule.forRoot({
+      typePaths: ['./src/**/*.graphql'],
+      resolvers: { JSON: GraphQLJSON },
+      definitions: { path: join(process.cwd(), 'src/graphql.ts') },
+      installSubscriptionHandlers: true,
+      cors: { // CORS 설정을 main.ts와 똑같이 적용합니다.
+        credentials: true,
+        origin: true,
+      },
+      subscriptions: {
+        path: '/subscription',
+      },
+      context: ({ req, res, con }) => { // response와 request를 모두 보내줍니다.
+        if (req) {
+          return { headers: req.headers, res };
+        } else {
+          return con;
+        }
+      },
+      uploads: {
+        maxFileSize: 40000000,
+        maxFiles: 6,
+      },
+      playground: true,
+      debug: true,
+    }),
+```
+
+
+
+전에는 Express의 Response로 부터 쿠키 설정을 해주었지만 아쉽게도 Graphql은 이 부분을 
+
+Graphql만의 방법으로 overwirte 해버립니다.
+
+그렇기 때문에 가장 쉬운 방법으로 Context에 접근을 하여 response `set-cookie`를 하는 방법을 사용하겠습니다.
+
+```typescript
+// ... 생략
+import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
+
+@Mutation()
+async login(@Args() loginArgs: LoginArgs, @Context() ctx: Context) {
+    const resultToken = await this.authService.login(loginArgs);
+    return this.setResponseCookie(ctx, resultToken);
+}
+  
+setResponseCookie(ctx: Context, resultToken: Token): boolean {
+    ctx.res.cookie('token', resultToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      domain: 'server_domain.접미사',
+      maxAge: 1000 * 60 * 60 * 24,
+    });
+    return !!resultToken;
+}
+```
+
+
+
+토큰을 삭제하는것도 마찬가지로 적용하면됩니다.
+
+```typescript
+// ... 생략
+@Post('logout')
+@UseGuards(RefreshAuthGuard)
+async logout(
+    @CurrentUser() member: User,
+    @Context() ctx: Context,
+  ) {
+    return this.setResponseClearCookie(ctx);
+ }
+
+setResponseClearCookie(ctx: Context): boolean {
+    ctx.res.clearCookie(this.authService.getCookieName(), {
+      domain: this.configService.get('defaultDomain'),
+    });
+    return true;
+}
+```
 
