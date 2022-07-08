@@ -94,3 +94,22 @@ async deleteByIds(ids: string[]) {
 }
 ```
 
+
+
+### 특정 컬럼 조회
+
+```typescript
+async getAllCompanyNameByCategory(
+  category: ProductCategoryEnum,
+): Promise<Manufacturer[]> {
+  return await this.productModel
+  .find({
+  category,
+})
+  .populate('manufacturer')
+    .exec()
+    .then((res) => res.map((product) => product.manufacturer));
+}
+}
+```
+
