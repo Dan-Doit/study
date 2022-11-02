@@ -344,9 +344,39 @@ async logout(
 
 setResponseClearCookie(ctx: Context): boolean {
     ctx.res.clearCookie(this.authService.getCookieName(), {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: this.configService.get('isStageOrProduction'),
       domain: this.configService.get('defaultDomain'),
     });
     return true;
 }
 ```
 
+
+
+
+
+etc/hosts domain 을 이용한 다른 로컬 주소의 Cookie 등록
+
+`/etc/hosts` 에 다음과같이 적어줍니다.
+
+```shell
+# localhost is used to configure the loopback interface
+# when the system is booting.  Do not change this entry.
+##
+127.0.0.1       localhost
+192.168.0.110   client.test.com
+192.168.0.29    api.test.com
+255.255.255.255 broadcasthost
+::1             localhost
+
+# Added by Docker Desktop
+# To allow the same kube context to work on the host and the container:
+127.0.0.1 kubernetes.docker.internal
+# End of section
+```
+
+중요한점은 위와 같이 `client` 와 `api` 의 아이피 주소를 같은 도메인으로 연결하고 서브도메인을 다르게합니다.
+
+이렇게하면 `sameStie='strict'` 로 브라우저에서 쿠키를 저장할수 있게됩니다.

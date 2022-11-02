@@ -260,7 +260,7 @@ type Exclude<T, U> = T extends U ? never : T;
 이 제네릭은 `T` 의 모든 프로퍼티중 `U` 의 프로퍼티를 제외한 나머지 프로퍼티의 **리터럴** 타입을 반환합니다.
 
 ```typescript
-type Id = Exclude<'id' | 'name', 'name'>    // type 은 'id'
+type Id = Exclude<'id' | 'age', 'name'>    // type 은 'id'
 ```
 
 ```typescript
