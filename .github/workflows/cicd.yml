@@ -3,7 +3,7 @@ name: Test CI-CD
 on:
   push:
     branches: [feature, main]
-    tags: ['test.*','v.*']
+    tags: ['test-*','v-*']
 
 env:
   TARGET_ENVIRONMENT: ${{ github.ref == 'refs/heads/feature' && 'feature' || github.ref == 'refs/heads/main' && 'main' }}
