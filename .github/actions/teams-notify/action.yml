@@ -1,0 +1,30 @@
+name: 'teams-notify'
+
+inputs:
+  color:
+    required: false
+    description: <hr> color
+    default: 'warning'
+  message:
+    required: true
+    description: notification message
+  repository:
+    required: true
+    description: git current repository
+  ms_teams_webhook_uri:
+    description: ms teams webhook uri
+    required: true
+
+description: send notification
+runs:
+  using: 'composite'
+
+  steps:
+    - name: Notify dedicated teams channel
+      uses: jdcargile/ms-teams-notification@v1.3
+      with:
+        github-token: ${{ github.token }}
+        ms-teams-webhook-uri: ${{ inputs.ms_teams_webhook_uri }}
+        notification-summary: ${{inputs.repository}}-client API ${{ inputs.message }}
+        notification-color: ${{ inputs.color }}
+        timezone: Asia/Seoul
