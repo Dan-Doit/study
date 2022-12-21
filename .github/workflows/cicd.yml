@@ -7,6 +7,7 @@ on:
 
 env:
   TARGET_ENVIRONMENT: ${{ github.ref == 'refs/heads/feature' && 'feature' || github.ref == 'refs/heads/main' && 'main' }}
+  TAG=${{ github.event.release.tag_name }}
 
 jobs:
   test:
@@ -15,4 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Tag Releases
-        run: echo "Deploying to production server on branch $GITHUB_REF"
+        run: |
+          TAG=${{ github.event.release.tag_name }}
+          echo "VERSION=${TAG#v}" >> $GITHUB_ENV
