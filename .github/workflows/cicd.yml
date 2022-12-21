@@ -13,6 +13,6 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Tag Releases
-        run: echo "$GITHUB_CONTEXT"
+        run: echo "Deploying to production server on branch $GITHUB_REF"
