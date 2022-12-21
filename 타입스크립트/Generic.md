@@ -234,7 +234,7 @@ type Extract<T, U> = T extends U ? T : never;
 `Exclude`와 반대이며 서로 중복되는 것만 반환한다고 생각해도 거의 맞습니다.
 
 ```typescript
-type Name = Extract<'id' | 'name', 'name'> // type 은 'name'
+type Name = Extract<'id' | 'name'> // type 은 'name'
 ```
 
 ```typescript

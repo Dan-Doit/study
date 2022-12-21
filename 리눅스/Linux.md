@@ -85,7 +85,6 @@ ex)
 - sh 파일에서 우리는 배쉬명령을 사용할수있는데 아래와 같이 #!/bin/bash 문구를 입력해주면된다.
 
 ```bash
-
 #!/bin/bash
 
 hello="hello"
@@ -97,6 +96,14 @@ echo ${hello}
 echo $hello", "$world
 echo ${hello}", "${world}
 ```
+
+- 실행 권한을 부여한다.
+
+```bash
+$ chmod 755 deploy_admin.sh
+```
+
+
 
 ## IF문
 
