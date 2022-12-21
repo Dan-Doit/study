@@ -7,7 +7,6 @@ on:
 
 env:
   TARGET_ENVIRONMENT: ${{ github.ref == 'refs/heads/feature' && 'feature' || github.ref == 'refs/heads/main' && 'main' }}
-  TAG=${{ github.event.release.tag_name }}
 
 jobs:
   test:
