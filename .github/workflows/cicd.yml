@@ -14,8 +14,7 @@ on:
       - "store/master/[0-9].[0-9]+.[0-9]+"
 
 env:
-  TARGET_ENVIRONMENT: ${{ github.ref == 'refs/heads/feature' && 'feature' || github.ref == 'refs/heads/main' && 'main' }}
-  TARGET_NAME: ${{ github.event.release.tag_name }}
+  TARGET_ENVIRONMENT: ${{ github.ref }}
 
 jobs:
   test:
