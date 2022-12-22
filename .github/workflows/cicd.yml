@@ -15,6 +15,7 @@ on:
 
 env:
   TARGET_ENVIRONMENT: ${{ github.ref == 'refs/heads/feature' && 'feature' || github.ref == 'refs/heads/main' && 'main' }}
+  TAG: ${{ GITHUB_REF#refs/tags/ }}
 
 jobs:
   test:
