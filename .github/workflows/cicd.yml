@@ -2,8 +2,16 @@ name: Test CI-CD
 
 on:
   push:
-    branches: [feature, main]
-    tags: ['test/*','v/*']
+    tags:
+      - "admin.development-[0-9].[0-9]+.[0-9]+"
+      - "admin.stage-[0-9].[0-9]+.[0-9]+"
+      - "admin.master-[0-9].[0-9]+.[0-9]+"
+      - "market.development-[0-9].[0-9]+.[0-9]+"
+      - "market.stage-[0-9].[0-9]+.[0-9]+"
+      - "market.master-[0-9].[0-9]+.[0-9]+"
+      - "store.development-[0-9].[0-9]+.[0-9]+"
+      - "store.stage-[0-9].[0-9]+.[0-9]+"
+      - "store.master-[0-9].[0-9]+.[0-9]+"
 
 env:
   TARGET_ENVIRONMENT: ${{ github.ref == 'refs/heads/feature' && 'feature' || github.ref == 'refs/heads/main' && 'main' }}
@@ -17,5 +25,5 @@ jobs:
       - name: Tag Releases
         run: |
           TAG=${{ github.event.release.tag_name }}
-          echo "${TAG#v}"
+          echo "${GITHUB_REF#refs/tags/}"
           echo "VERSION=${TAG#v}" >> $GITHUB_ENV
