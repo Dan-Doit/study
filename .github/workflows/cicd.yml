@@ -15,6 +15,7 @@ on:
 
 env:
   TARGET_ENVIRONMENT: ${{ github.ref == 'refs/heads/feature' && 'feature' || github.ref == 'refs/heads/main' && 'main' }}
+  TARGET_NAME: ${{ github.event.release.tag_name }}
 
 jobs:
   test:
@@ -24,10 +25,8 @@ jobs:
       - uses: actions/checkout@v3
       - name: Test
         run: |
-          TAG_NAME=${{ github.event.release.tag_name }}
-          echo "TAG=${TAG_NAME}" >> $GITHUB_ENV
+          echo "TAG=${{env.TAG_NAME}}" >> $GITHUB_ENV
           echo "VERSION=${TAG_NAME#admin}" >> $GITHUB_ENV
+          echo "TEST=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
       - name: Echo tag
         run: echo "${{env.TAG}}"
-      - name: Echo version
-        run: echo "${{env.VERSION}}"
