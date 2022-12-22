@@ -27,4 +27,4 @@ jobs:
           TAG=${{ github.event.release.tag_name }}
           echo "VERSION=${TAG#admin}" >> $GITHUB_ENV
       - name: Echo tag
-        run: echo "${env.VERSION}"
+        run: echo "${{env.VERSION}}"
