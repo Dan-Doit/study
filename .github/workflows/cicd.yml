@@ -2,7 +2,7 @@ name: Test CI-CD
 
 on:
   push:
-#    branches: [feature, main]
+    branches: [feature, main]
     tags: ['test/*','v/*']
 
 env:
