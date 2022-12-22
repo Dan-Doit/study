@@ -27,7 +27,7 @@ jobs:
         run: |
           TAG=${GITHUB_REF#refs/tags/}
           echo "SPLIT=${TAG##*/}" >> $GITHUB_ENV
-#          echo "SERVICE=${TAG##*/}" >> $GITHUB_ENV
-#          echo "REPO=${TAG##*/}" >> $GITHUB_ENV
+          echo "SERVICE=${TAG#/%/}" >> $GITHUB_ENV
+          echo "REPO=${TAG%%*/}" >> $GITHUB_ENV
       - name: Echo tag
         run: echo "${{env.SPLIT}}"
