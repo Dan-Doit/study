@@ -3,15 +3,15 @@ name: Test CI-CD
 on:
   push:
     tags:
-      - "admin/development/[0-9].[0-9]+.[0-9]+"
-      - "admin/stage/[0-9].[0-9]+.[0-9]+"
-      - "admin/master/[0-9].[0-9]+.[0-9]+"
-      - "market/development/[0-9].[0-9]+.[0-9]+"
-      - "market/stage/[0-9].[0-9]+.[0-9]+"
-      - "market/master/[0-9].[0-9]+.[0-9]+"
-      - "store/development/[0-9].[0-9]+.[0-9]+"
-      - "store/stage/[0-9].[0-9]+.[0-9]+"
-      - "store/master/[0-9].[0-9]+.[0-9]+"
+      - "[0-9].[0-9]+.[0-9]+-md.[0-9]+"
+      - "[0-9].[0-9]+.[0-9]+-ms.[0-9]+"
+      - "[0-9].[0-9]+.[0-9]+-mp.[0-9]+"
+      - "[0-9].[0-9]+.[0-9]+-sd.[0-9]+"
+      - "[0-9].[0-9]+.[0-9]+-ss.[0-9]+"
+      - "[0-9].[0-9]+.[0-9]+-sp.[0-9]+"
+      - "[0-9].[0-9]+.[0-9]+-ad.[0-9]+"
+      - "[0-9].[0-9]+.[0-9]+-as.[0-9]+"
+      - "[0-9].[0-9]+.[0-9]+-ap.[0-9]+"
 
 env:
   TARGET_ENVIRONMENT: ${{ github.ref }}
@@ -25,9 +25,7 @@ jobs:
       - name: Test
         run: |
           TAG=${GITHUB_REF#refs/tags/}
-          echo "SPLIT=${TAG##*/}" >> $GITHUB_ENV
-          echo "SERVICE=${TAG%%0}" >> $GITHUB_ENV
-          echo "ASD=${TAG%%/}" >> $GITHUB_ENV
-          echo "REPO=${TAG#*/}" >> $GITHUB_ENV
-      - name: Echo tag
-        run: echo "${{env.SPLIT}}"
+          SPLIT=${TAG##*-}
+          echo "SERVICE=${SPLIT%%.*}" >> $GITHUB_ENV
+      - name: Echo SERVICE
+        run: echo "${{env.SERVICE}}"
