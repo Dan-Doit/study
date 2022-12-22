@@ -3,15 +3,15 @@ name: Test CI-CD
 on:
   push:
     tags:
-      - "admin.development-[0-9].[0-9]+.[0-9]+"
-      - "admin.stage-[0-9].[0-9]+.[0-9]+"
-      - "admin.master-[0-9].[0-9]+.[0-9]+"
-      - "market.development-[0-9].[0-9]+.[0-9]+"
-      - "market.stage-[0-9].[0-9]+.[0-9]+"
-      - "market.master-[0-9].[0-9]+.[0-9]+"
-      - "store.development-[0-9].[0-9]+.[0-9]+"
-      - "store.stage-[0-9].[0-9]+.[0-9]+"
-      - "store.master-[0-9].[0-9]+.[0-9]+"
+      - "admin/development/[0-9].[0-9]+.[0-9]+"
+      - "admin/stage/[0-9].[0-9]+.[0-9]+"
+      - "admin/master/[0-9].[0-9]+.[0-9]+"
+      - "market/development/[0-9].[0-9]+.[0-9]+"
+      - "market/stage/[0-9].[0-9]+.[0-9]+"
+      - "market/master/[0-9].[0-9]+.[0-9]+"
+      - "store/development/[0-9].[0-9]+.[0-9]+"
+      - "store/stage/[0-9].[0-9]+.[0-9]+"
+      - "store/master/[0-9].[0-9]+.[0-9]+"
 
 env:
   TARGET_ENVIRONMENT: ${{ github.ref == 'refs/heads/feature' && 'feature' || github.ref == 'refs/heads/main' && 'main' }}
@@ -25,8 +25,9 @@ jobs:
       - uses: actions/checkout@v3
       - name: Test
         run: |
-          echo "TAG=${{env.TAG_NAME}}" >> $GITHUB_ENV
-          echo "VERSION=${TAG_NAME#admin}" >> $GITHUB_ENV
-          echo "TEST=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "SPLIT=${TAG##*/}" >> $GITHUB_ENV
+#          echo "SERVICE=${TAG##*/}" >> $GITHUB_ENV
+#          echo "REPO=${TAG##*/}" >> $GITHUB_ENV
       - name: Echo tag
-        run: echo "${{env.TAG}}"
+        run: echo "${{env.SPLIT}}"
