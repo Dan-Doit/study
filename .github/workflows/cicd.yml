@@ -28,8 +28,8 @@ jobs:
           TAG=${TAG##*-}
           TAG=${TAG%%.*}
           
-          if [ ${SERVICE:0:1} == 'm' ]; then echo "SERVICE=market" >> $GITHUB_ENV; fi
-          if [ ${SERVICE:1:1} == 'd' ]; then echo "REPO=development" >> $GITHUB_ENV; fi
+          if [ ${TAG:0:1} == 'm' ]; then echo "SERVICE=market" >> $GITHUB_ENV; fi
+          if [ ${TAG:1:1} == 'd' ]; then echo "REPO=development" >> $GITHUB_ENV; fi
 
       - name: Echo SERVICE
         run: echo "${{env.SERVICE}}"
