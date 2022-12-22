@@ -25,7 +25,11 @@ jobs:
       - name: Test
         run: |
           TAG=${GITHUB_REF#refs/tags/}
-          SPLIT=${TAG##*-}
-          echo "SERVICE=${SPLIT%%.*}" >> $GITHUB_ENV
+          TAG=${TAG##*-}
+          TAG=${TAG%%.*}
+          
+          if [ ${SERVICE:0:1} == 'm' ]; then echo "SERVICE=market" >> $GITHUB_ENV; fi
+          if [ ${SERVICE:1:1} == 'd' ]; then echo "REPO=development" >> $GITHUB_ENV; fi
+
       - name: Echo SERVICE
         run: echo "${{env.SERVICE}}"
