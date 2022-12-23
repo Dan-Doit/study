@@ -17,18 +17,21 @@ runs:
         TAG=${TAG##*-}
         TAG=${TAG%%.*}
         
-        if [ ${TAG:0:1} == 'a' ]; 
-          then echo "SERVICE=admin" >> $GITHUB_ENV;
-        elif [ ${TAG:0:1} == 'm' ];
-          then echo "SERVICE=market" >> $GITHUB_ENV;
-        elif [ ${TAG:0:1} == 's' ];
-          then echo "SERVICE=store" >> $GITHUB_ENV;
+        if [ ${TAG:0:1} == 'a' ]; then 
+          echo "SERVICE=admin" >> $GITHUB_ENV;
+          echo "BUCKET=energyx-api-admin" >> $GITHUB_ENV;
+        elif [ ${TAG:0:1} == 'm' ]; then 
+          echo "SERVICE=market" >> $GITHUB_ENV;
+          echo "BUCKET=energyx-api" >> $GITHUB_ENV;
+        elif [ ${TAG:0:1} == 's' ]; then 
+          echo "SERVICE=store" >> $GITHUB_ENV;
+          echo "BUCKET=energyx-api-store" >> $GITHUB_ENV;
         fi
         
-        if [ ${TAG:1:1} == 'd' ]; 
-          then echo "REPO=development" >> $GITHUB_ENV;
-        elif [ ${TAG:1:1} == 's' ];
-          then echo "REPO=stage" >> $GITHUB_ENV;
-        elif [ ${TAG:1:1} == 'p' ];
-          then echo "REPO=production" >> $GITHUB_ENV;
+        if [ ${TAG:1:1} == 'd' ]; then 
+          echo "TARGET_ENVIRONMENT=development" >> $GITHUB_ENV;
+        elif [ ${TAG:1:1} == 's' ]; then 
+          echo "TARGET_ENVIRONMENT=stage" >> $GITHUB_ENV;
+        elif [ ${TAG:1:1} == 'p' ]; then 
+          echo "TARGET_ENVIRONMENT=production" >> $GITHUB_ENV;
         fi
