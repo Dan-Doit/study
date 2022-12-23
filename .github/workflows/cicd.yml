@@ -3,15 +3,7 @@ name: Test CI-CD
 on:
   push:
     tags:
-      - "[0-9].[0-9]+.[0-9]+-md.[0-9]+"
-      - "[0-9].[0-9]+.[0-9]+-ms.[0-9]+"
-      - "[0-9].[0-9]+.[0-9]+-mp.[0-9]+"
-      - "[0-9].[0-9]+.[0-9]+-sd.[0-9]+"
-      - "[0-9].[0-9]+.[0-9]+-ss.[0-9]+"
-      - "[0-9].[0-9]+.[0-9]+-sp.[0-9]+"
-      - "[0-9].[0-9]+.[0-9]+-ad.[0-9]+"
-      - "[0-9].[0-9]+.[0-9]+-as.[0-9]+"
-      - "[0-9].[0-9]+.[0-9]+-ap.[0-9]+"
+      - "[0-9].[0-9]+.[0-9]+-[a,m,s][d,s,p].[0-9]+"
 
 env:
   TARGET_ENVIRONMENT: ${{ github.ref }}
@@ -22,27 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Test
-        run: |
-          TAG=${GITHUB_REF#refs/tags/}
-          TAG=${TAG##*-}
-          TAG=${TAG%%.*}
-          
-          if [ ${TAG:0:1} == 'a' ]; 
-            then echo "SERVICE=admin" >> $GITHUB_ENV;
-          elif [ ${TAG:0:1} == 'm' ];
-            then echo "SERVICE=market" >> $GITHUB_ENV;
-          elif [ ${TAG:0:1} == 's' ];
-            then echo "SERVICE=store" >> $GITHUB_ENV;
-          fi
-          
-          if [ ${TAG:1:1} == 'd' ]; 
-            then echo "REPO=development" >> $GITHUB_ENV;
-          elif [ ${TAG:1:1} == 's' ];
-            then echo "REPO=stage" >> $GITHUB_ENV;
-          elif [ ${TAG:1:1} == 'p' ];
-            then echo "REPO=production" >> $GITHUB_ENV;
-          fi
+      - name: SetUp Environments
+        if: ${{ always() }}
+        uses: ./.github/actions/setup
 
       - name: Echo SERVICE
         run: echo "${{env.SERVICE}}"
+
+      - name: Echo REPO
+        run: echo "${{env.REPO}}"
