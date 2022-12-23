@@ -3,7 +3,7 @@ name: Test CI-CD
 on:
   push:
     tags:
-      - "[0-9].[0-9]+.[0-9]+-[a,m,s][d,s,p].[0-9]+"
+      - "[0-9].[0-9]+.[0-9]+-[ams][dsp].[0-9]+"
 
 env:
   TARGET_ENVIRONMENT: ${{ github.ref }}
