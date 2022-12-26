@@ -36,7 +36,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Print Environments
 
       - name: print service env
         run: echo "${{env.SERVICE}}";
