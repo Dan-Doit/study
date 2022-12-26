@@ -7,22 +7,42 @@ on:
 
 env:
   TARGET_ENVIRONMENT: ${{ github.ref }}
+  SERVICE: ''
+  BUCKET: ''
 
 jobs:
-  test:
-    name: Test
+  start:
+    name: ⛏ Start Deploy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Setup Environments
+        id: setup_env
         if: ${{ always() }}
         uses: ./.github/actions/setup
 
-      - name: Echo SERVICE
-        run: echo "${{env.SERVICE}}"
+      - name: set service env
+        run: echo "SERVICE=${{ steps.setup_env.outputs.SERVICE }}" >> $GITHUB_ENV;
 
-      - name: Echo REPO
-        run: echo "${{env.REPO}}"
+      - name: set target environment env
+        run: echo "TARGET_ENVIRONMENT=${{ steps.setup_env.outputs.TARGET_ENVIRONMENT }}" >> $GITHUB_ENV;
 
-      - name: Echo BUCKET
-        run: echo "${{env.BUCKET}}"
+      - name: set bucket env
+        run: echo "BUCKET=${{ steps.setup_env.outputs.BUCKET }}" >> $GITHUB_ENV;
+
+
+    end:
+      name: 📤 End Deploy
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Print Environments
+
+        - name: print service env
+          run: echo "${{env.SERVICE}}";
+
+        - name: print target environment env
+          run: echo "${{env.TARGET_ENVIRONMENT}}";
+
+        - name: print bucket env
+          run: echo "${{env.BUCKET}}";
