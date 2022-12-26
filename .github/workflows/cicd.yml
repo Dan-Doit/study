@@ -31,18 +31,18 @@ jobs:
         run: echo "BUCKET=${{ steps.setup_env.outputs.BUCKET }}" >> $GITHUB_ENV;
 
 
-    end:
-      name: 📤 End Deploy
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v3
-        - name: Print Environments
+  end:
+    name: 📤 End Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Print Environments
 
-        - name: print service env
-          run: echo "${{env.SERVICE}}";
+      - name: print service env
+        run: echo "${{env.SERVICE}}";
 
-        - name: print target environment env
-          run: echo "${{env.TARGET_ENVIRONMENT}}";
+      - name: print target environment env
+        run: echo "${{env.TARGET_ENVIRONMENT}}";
 
-        - name: print bucket env
-          run: echo "${{env.BUCKET}}";
+      - name: print bucket env
+        run: echo "${{env.BUCKET}}";
