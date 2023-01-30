@@ -2,19 +2,46 @@ name: Test CI-CD
 
 on:
   push:
-    branches: [feature, main]
-    tags: ['test/*','v/*']
+    tags:
+      - "[0-9].[0-9]+.[0-9]+-[ams][dsp].[0-9]+"
 
 env:
-  TARGET_ENVIRONMENT: ${{ github.ref == 'refs/heads/feature' && 'feature' || github.ref == 'refs/heads/main' && 'main' }}
+  TARGET_ENVIRONMENT: ${{ github.ref }}
+  SERVICE: ''
+  BUCKET: ''
 
 jobs:
-  test:
-    name: Test
+  start:
+    name: ⛏ Start Deploy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Tag Releases
-        run: |
-          TAG=${{ github.event.release.tag_name }}
-          echo "VERSION=${TAG#v}" >> $GITHUB_ENV
+      - name: Setup Environments
+        id: setup_env
+        if: ${{ always() }}
+        uses: ./.github/actions/setup
+
+      - name: set service env
+        run: echo "SERVICE=${{ steps.setup_env.outputs.SERVICE }}" >> $GITHUB_ENV;
+
+      - name: set target environment env
+        run: echo "TARGET_ENVIRONMENT=${{ steps.setup_env.outputs.TARGET_ENVIRONMENT }}" >> $GITHUB_ENV;
+
+      - name: set bucket env
+        run: echo "BUCKET=${{ steps.setup_env.outputs.BUCKET }}" >> $GITHUB_ENV;
+
+
+  end:
+    name: 📤 End Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: print service env
+        run: echo "${{env.SERVICE}}";
+
+      - name: print target environment env
+        run: echo "${{env.TARGET_ENVIRONMENT}}";
+
+      - name: print bucket env
+        run: echo "${{env.BUCKET}}";
